@@ -3,6 +3,59 @@ import { MPlayerManager } from './mplayerManager'
 const DEFAULT_OP_TIMEOUT = 2000;
 const OPEN_OP_TIMEOUT = 8000;
 
+const parseKeyValueList = (data: string): { [id: string]: string } => {
+  return data
+    .split(',')
+    .reduce(
+      (
+        res: { [id: string]: string },
+        item: string,
+        i: number,
+        arr: Array<string>
+      ) => {
+        if (!(i % 2)) {
+          res[item.toLowerCase()] = (arr[i + 1] || '').trim();
+        }
+        return res;
+      },
+      {}
+    );
+};
+
+export type Metadata = Partial<{
+  title: string;
+  artist: string;
+  album: string;
+  year: number;
+  comment: string;
+  track: number;
+  genre: string;
+}>;
+
+const parseMetadata = (data: string): Metadata => {
+  if (data === '(null)') {
+    return {
+      title: null,
+      artist: null,
+      album: null,
+      year: null,
+      comment: null,
+      track: null,
+      genre: null
+    };
+  }
+  const raw = parseKeyValueList(data);
+  return {
+    title: raw.title,
+    artist: raw.artist,
+    album: raw.album,
+    year: raw.year ? parseInt(raw.year, 10) : null,
+    comment: raw.comment,
+    track: raw.track ? parseInt(raw.track, 10) : null,
+    genre: raw.genre
+  };
+};
+
 /**
  * MPlayerMediaItem
  * 
@@ -61,6 +114,26 @@ export class MPlayerMediaItem {
     }, (data, resolve, reject) => {
       if (data.includes('GLOBAL: ANS_time_pos=')) {
         resolve(parseFloat(data.match(/GLOBAL: ANS_time_pos=([0-9\.]+)/)[1]));
+      }
+    }, DEFAULT_OP_TIMEOUT);
+  }
+
+  /**
+   * getMeta
+   * 
+   * @returns a promise that resolves with the metadata
+   */
+  public getMeta(): Promise<Metadata> {
+    if (!this.mplayer) {
+      return Promise.reject('Not in a valid state');
+    }
+
+    return this.mplayer.doCriticalOperation<Metadata>((exec) => {
+      return exec('pausing_keep_force', 'get_property', 'metadata');
+    }, (data, resolve, reject) => {
+      if (data.includes('ANS_metadata=')) {
+        const [, list] = data.match(/ANS_metadata=(.+)$/);
+        resolve(parseMetadata(list));
       }
     }, DEFAULT_OP_TIMEOUT);
   }
