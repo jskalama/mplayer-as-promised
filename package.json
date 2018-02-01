@@ -1,7 +1,7 @@
 {
-  "name": "mplayer-as-promised",
+  "name": "kalama-mplayer-as-promised",
   "version": "0.0.5",
-  "description": "Simple mplayer (http://www.mplayerhq.hu/) wrapper for use in node written in Typescript and presenting a promise-heavy API",
+  "description": "(Special fork for kalama project. Contains some patches and fixes). Simple mplayer (http://www.mplayerhq.hu/) wrapper for use in node written in Typescript and presenting a promise-heavy API",
   "main": "dist/lib/index.js",
   "types": "dist/typings/lib/index.d.ts",
   "scripts": {
@@ -16,17 +16,23 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/cdunford/mplayer-as-promised.git"
+    "url": "git+https://github.com/jskalama/mplayer-as-promised.git"
   },
   "keywords": [
     "mplayer"
   ],
   "author": "Craig Dunford",
+  "contributors": [
+    {
+      "name": "corporateanon",
+      "email": "corporateanon@gmail.com"
+    }
+  ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/cdunford/mplayer-as-promised/issues"
+    "url": "https://github.com/jskalama/mplayer-as-promised/issues"
   },
-  "homepage": "https://github.com/cdunford/mplayer-as-promised#readme",
+  "homepage": "https://github.com/jskalama/mplayer-as-promised#readme",
   "devDependencies": {
     "@types/chai": "^3.4.35",
     "@types/mocha": "^2.2.44",
