@@ -8,6 +8,93 @@ import * as sinonChai from 'sinon-chai';
 
 const expect = chai.expect;
 
+describe('MPlayerManager.setStartupVolume', () => {
+  let mgr: MPlayerManager;
+  let spawnArgs: Array<string>;
+  beforeEach(()=>{
+    mgr = new MPlayerManager((line) => console.log(line));
+    const spawnMplayer = sinon.stub();
+    const mplayerProc = {
+      on: sinon.stub(),
+      removeListener: sinon.stub(),
+      removeAllListeners: sinon.stub(),
+      stdout: {
+        on: sinon.stub(),
+        removeListener: sinon.stub(),
+        removeAllListeners: sinon.stub(),
+      },
+      stderr: {
+        on: sinon.stub(),
+        removeListener: sinon.stub(),
+        removeAllListeners: sinon.stub(),
+      }
+    };
+    spawnMplayer.callsFake((args) => {
+      spawnArgs = args;
+      return mplayerProc;  
+    });
+    (<any>mgr).spawnMplayer = spawnMplayer;
+  });
+
+
+  it('should start mplayer with no volume argument', (done) => {
+
+    mgr.doCriticalOperation<string>((exec) => {
+      return Promise.resolve();
+    }, (data, resolve, reject) => {
+      resolve('ok');
+    }, 0);
+
+    setTimeout(()=>{
+      expect(spawnArgs).to.deep.equal([
+        '-msgmodule',
+        '-msglevel',
+        'all=6:statusline=4',
+        '-idle',
+        '-slave',
+        '-fs',
+        '-noborder',
+        '-softvol',
+        '-softvol-max',
+        '500'
+      ]);
+      done();
+    }, 10);
+  });
+
+
+  it('should start mplayer with volume argument set', (done) => {
+
+    mgr.setStartupVolume(30);
+
+    mgr.doCriticalOperation<string>((exec) => {
+      return Promise.resolve();
+    }, (data, resolve, reject) => {
+      resolve('ok');
+    }, 0);
+
+    setTimeout(()=>{
+      expect(spawnArgs).to.deep.equal([
+        '-msgmodule',
+        '-msglevel',
+        'all=6:statusline=4',
+        '-idle',
+        '-slave',
+        '-fs',
+        '-noborder',
+        '-softvol',
+        '-softvol-max',
+        '500',
+        '-volume',
+        '30'
+      ]);
+      done();
+    }, 10);
+  });
+  
+});
+
+
 describe('MPlayerManager.shutdown', () => {
 
   let mgr: MPlayerManager;
