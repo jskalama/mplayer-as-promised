@@ -25,6 +25,7 @@ export class MPlayerManager {
   private mplayerProc: proc.ChildProcess;
   private ready: boolean = false;
   private busy: boolean = false;
+  private startupVolume?: number = null;
 
   /**
    * constructor
@@ -217,6 +218,18 @@ export class MPlayerManager {
     });
   }
 
+  private spawnMplayer(args: Array<string>): proc.ChildProcess {
+    return proc.spawn('mplayer', args);
+  }
+
+  private buildCommandOptions(): Array<string> {
+    const opts = [...MPLAYER_ARGS];
+    if(this.startupVolume !== null) {
+      opts.push('-volume', this.startupVolume.toString());
+    }
+    return opts;
+  }
+
   /**
    * readyMPlayer
    * 
@@ -231,7 +244,7 @@ export class MPlayerManager {
       }
 
       const spawnMPlayer = () => {
-        this.mplayerProc = proc.spawn('mplayer', MPLAYER_ARGS);
+        this.mplayerProc = this.spawnMplayer(this.buildCommandOptions());
 
         const handleProcCompletion = () => {
           if (this.mplayerProc) {
@@ -285,5 +298,19 @@ export class MPlayerManager {
 
       this.shutdown().then(spawnMPlayer, spawnMPlayer);
     });
+  }
+
+  public setStartupVolume(volume: number): void {
+    if (isNaN(volume)) {
+      volume = 0;
+    }
+    if (volume > 100) {
+      volume = 100;
+    }
+    if (volume < 0) {
+      volume = 0;
+    }
+
+    this.startupVolume = volume;
   }
 }

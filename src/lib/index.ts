@@ -442,6 +442,17 @@ export class MPlayer {
   }
 
   /**
+   * setStartupVolume
+   * 
+   * Set volume [0...100] that will be passed as `-volume` option to the new mplayer process once it is spawned
+   * 
+   * @param volume
+   */
+  public setStartupVolume(volume: number): void {
+    this.mplayer.setStartupVolume(volume);
+  }
+
+  /**
    * shutdown
    * 
    * Shutdown mplayer
