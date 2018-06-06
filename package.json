@@ -1,6 +1,6 @@
 {
   "name": "kalama-mplayer-as-promised",
-  "version": "0.0.6",
+  "version": "0.1.0",
   "description": "(Special fork for kalama project. Contains some patches and fixes). Simple mplayer (http://www.mplayerhq.hu/) wrapper for use in node written in Typescript and presenting a promise-heavy API",
   "main": "dist/lib/index.js",
   "types": "dist/typings/lib/index.d.ts",
